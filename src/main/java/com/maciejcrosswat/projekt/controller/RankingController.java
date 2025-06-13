@@ -3,6 +3,7 @@ package com.maciejcrosswat.projekt.controller;
 import com.maciejcrosswat.projekt.Main;
 import com.maciejcrosswat.projekt.SceneName;
 import javafx.event.Event;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class RankingController {
@@ -18,7 +19,7 @@ public class RankingController {
     }
 
     /** Display main scene when the "back" button is clicked */
-    public void handleMousePress(Event event) {
+    public void handleOnPressMenuButton(MouseEvent event) {
         stage.setScene(Main.getScenes().get(SceneName.MENU));
     }
 }

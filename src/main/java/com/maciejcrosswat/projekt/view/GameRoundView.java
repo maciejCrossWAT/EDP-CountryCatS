@@ -2,18 +2,16 @@ package com.maciejcrosswat.projekt.view;
 
 import com.maciejcrosswat.projekt.Main;
 import com.maciejcrosswat.projekt.controller.GameRoundController;
-import javafx.beans.property.SimpleStringProperty;
+import com.maciejcrosswat.projekt.data.Colors;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -54,18 +52,24 @@ public class GameRoundView implements IView {
         // Making answer elements
         List<Pane> answerPanes = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            Pane pane = new Pane();
+            BorderPane pane = new BorderPane();
 
-            String imageURL = "https://www.pexels.com/photo/red-concrete-brick-259915/";
-            ImageView imageView = new ImageView();
-            Image image = new Image(imageURL, true);
-            imageView.setImage(image);
+            Label answer = new Label("answer " + i);
+            answer.textProperty().bind(Main.questionProperties.getAnswer(i));
+            answer.setFont(new Font("System Bold", 20));
+            pane.setUserData(i);
 
             pane.setPrefWidth(390);
             pane.setPrefHeight(210);
-            pane.setStyle("-fx-background-color: #880000");
-            pane.setOnMousePressed(controller::handleMousePress);
-            pane.getChildren().add(imageView);
+            pane.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+            pane.setOnMousePressed(controller::handleNewRound);
+            pane.setCenter(answer);
+            pane.setOnMouseEntered(event -> {
+                pane.setStyle(String.format("-fx-background-color: %s", Colors.accent));
+            });
+            pane.setOnMouseExited(event -> {
+                pane.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+            });
 
             answerPanes.add(pane);
         }
@@ -78,12 +82,12 @@ public class GameRoundView implements IView {
         answerGrid.add(answerPanes.get(3), 1, 1);
         answerGrid.setHgap(10);
         answerGrid.setVgap(10);
-        answerGrid.setStyle("-fx-background-color: #669966");
+        answerGrid.setStyle(String.format("-fx-background-color: %s", Colors.secondary));
         answerGrid.setPrefWidth(800);
 
         // Making question element
         Label questionLabel = new Label("Question");
-        questionLabel.setFont(new Font("System Bold", 28));
+        questionLabel.setFont(new Font("System Bold", 20));
         questionLabel.setAlignment(Pos.TOP_LEFT);
         questionLabel.textProperty().bind(Main.questionProperties.getQuestion());
 
@@ -92,26 +96,40 @@ public class GameRoundView implements IView {
         centerContainer.getChildren().addAll(questionLabel, answerGrid);
         centerContainer.setPrefWidth(800);
         centerContainer.setPadding(new Insets(10));
+        centerContainer.disableProperty().bind(Main.isRoundAnswerContainerDisabled);
 
         // Making round title
-        Label roundLabel = new Label("Round 1");
+        Label roundLabel = new Label("Round: ");
         roundLabel.setFont(new Font("System Bold", 32));
-        roundLabel.setAlignment(Pos.TOP_CENTER);
+        roundLabel.setAlignment(Pos.CENTER);
+
+        Label roundValueLabel = new Label();
+        roundValueLabel.textProperty().bind(Main.roundString);
+        roundValueLabel.setFont(new Font("System Bold", 32));
+        roundValueLabel.setAlignment(Pos.TOP_CENTER);
+
+        BorderPane roundLabelContainer = new BorderPane();
+        roundLabelContainer.setLeft(roundLabel);
+        roundLabelContainer.setRight(roundValueLabel);
 
         // Making flag container
-        Pane flagPane = new Pane();
-        ImageView flagImage = new ImageView();
-        String imageURL = "https://flagsapi.com/BE/flat/64.png";
-        Image image = new Image(imageURL, true);
-        flagImage.setImage(image);
-        flagPane.getChildren().add(flagImage);
+        HBox flagContainer = new HBox();
+        flagContainer.getChildren().addAll(Main.mainFlagImage, Main.oddFlagImage);
+        flagContainer.setAlignment(Pos.TOP_CENTER);
+
+        // Go back button
+        Button menuButton = new Button("Wróć");
+        menuButton.setOnMousePressed(controller::handleOnPressMenuButton);
+        menuButton.setFont(new Font("System Bold", 24));
 
         // Making top container
         BorderPane topContainer = new BorderPane();
-        topContainer.setStyle("-fx-background-color: #669966");
-        topContainer.setLeft(roundLabel);
-        topContainer.setRight(flagPane);
+        topContainer.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        topContainer.setLeft(roundLabelContainer);
+        topContainer.setCenter(flagContainer);
+        topContainer.setRight(menuButton);
         topContainer.setPadding(new Insets(10));
+        topContainer.setPrefHeight(80);
 
         root.setTop(topContainer);
         root.setCenter(centerContainer);

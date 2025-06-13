@@ -2,6 +2,7 @@ package com.maciejcrosswat.projekt.view;
 
 import com.maciejcrosswat.projekt.controller.GameEndingController;
 import com.maciejcrosswat.projekt.controller.RankingController;
+import com.maciejcrosswat.projekt.data.Colors;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class RankingView implements IView {
@@ -34,25 +36,27 @@ public class RankingView implements IView {
 
         // Header
         Label headerLabel = new Label("Ranking");
-        headerLabel.setAlignment(Pos.TOP_LEFT);
+        headerLabel.setAlignment(Pos.CENTER_LEFT);
         headerLabel.setFont(new Font("System Bold", 32));
 
         Button headerReturnButton = new Button("Wróć");
-        headerReturnButton.setAlignment(Pos.TOP_RIGHT);
+        headerReturnButton.setPrefWidth(100);
+        headerReturnButton.setFont(new Font("System Bold", 20));
+        headerReturnButton.setOnMousePressed(controller::handleOnPressMenuButton);
 
-        HBox headerContainer = new HBox();
-        headerContainer.getChildren().addAll(headerLabel, headerReturnButton);
+        BorderPane headerContainer = new BorderPane();
+        headerContainer.setLeft(headerLabel);
+        headerContainer.setRight(headerReturnButton);
+        headerContainer.setPrefWidth(800);
         headerContainer.setPadding(new Insets(10));
-        headerContainer.setStyle("-fx-background-color: #222266");
 
         // Ranking container
         VBox rankingList = new VBox();
-        rankingList.setStyle("-fx-background-color: #226622");
+        rankingList.setStyle(String.format("-fx-background-color: %s", Colors.primary));
         rankingList.setPadding(new Insets(5));
 
-        Pane rankingContainer = new Pane();
-        rankingContainer.getChildren().add(rankingList);
-        rankingContainer.setStyle("-fx-background-color: #222266");
+        BorderPane rankingContainer = new BorderPane();
+        rankingContainer.setCenter(rankingList);
         rankingContainer.setPadding(new Insets(10));
 
         // Main container

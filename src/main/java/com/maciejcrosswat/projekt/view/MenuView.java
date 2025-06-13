@@ -1,6 +1,7 @@
 package com.maciejcrosswat.projekt.view;
 
 import com.maciejcrosswat.projekt.controller.MenuController;
+import com.maciejcrosswat.projekt.data.Colors;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -29,7 +30,7 @@ public class MenuView implements IView {
 
         // Switch between scenes
         Button startButton = new Button("Start");
-        startButton.setPrefWidth(100);
+        startButton.setPrefWidth(150);
         startButton.setFont(new Font(24));
         startButton.setOnMousePressed(controller::handleOnPressStartButton);
 
@@ -39,7 +40,7 @@ public class MenuView implements IView {
         rankingButton.setOnMousePressed(controller::handleOnPressRankingButton);
 
         // Label Title
-        Label label = new Label("Country Cat-S");
+        Label label = new Label("Spot the Foreign Dish!");
         label.setFont(new Font("System Bold", 32));
 
         // Build scene
@@ -52,7 +53,7 @@ public class MenuView implements IView {
         BorderPane root = new BorderPane();
         root.setCenter(vbox);
 
-        Button closeButton = new Button("Quit");
+        Button closeButton = new Button("Wyjdź");
         closeButton.setPrefWidth(100);
         closeButton.setFont(new Font(24));
         closeButton.setOnMousePressed(e -> stage.close());
@@ -61,6 +62,7 @@ public class MenuView implements IView {
         bbar.setPadding(new Insets(10));
         bbar.getButtons().add(closeButton);
         root.setBottom(bbar);
+        root.setStyle(String.format("-fx-background-color: %s", Colors.primary));
         Scene scene = new Scene(root, 810, 540);
 
         return scene;

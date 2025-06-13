@@ -7,6 +7,7 @@ import java.util.List;
 
 public class QuestionProperties {
     private StringProperty mainCountry;
+    private StringProperty mainCountry2Letters;
     private StringProperty question;
     private List<StringProperty> answers;
     private IntegerProperty correctAnswerIndex;
@@ -17,6 +18,14 @@ public class QuestionProperties {
 
     public void setMainCountry(String mainCountry) {
         this.mainCountry.set(mainCountry);
+    }
+
+    public StringProperty getMainCountry2Letters() {
+        return mainCountry2Letters;
+    }
+
+    public void setMainCountry2Letters(String mainCountry2Letters) {
+        this.mainCountry2Letters.set(mainCountry2Letters);
     }
 
     public StringProperty getQuestion() {
@@ -43,8 +52,9 @@ public class QuestionProperties {
         this.correctAnswerIndex.set(index);
     }
 
-    public QuestionProperties(String mainCountry, String question, String[] answers, int correctAnswerIndex) {
+    public QuestionProperties(String mainCountry, String mainCountry2letters, String question, String[] answers, int correctAnswerIndex) {
         this.mainCountry = new SimpleStringProperty(mainCountry);
+        this.mainCountry2Letters = new SimpleStringProperty(mainCountry2letters);
         this.question = new SimpleStringProperty(question);
         this.answers = new ArrayList<>();
         for (String answer : answers) {

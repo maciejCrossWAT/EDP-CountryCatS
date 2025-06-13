@@ -4,15 +4,22 @@ import com.maciejcrosswat.projekt.Main;
 import com.maciejcrosswat.projekt.data.Question;
 import com.maciejcrosswat.projekt.data.QuestionCategory;
 import com.maciejcrosswat.projekt.data.QuestionProperties;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
+import javafx.scene.image.Image;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.util.Locale;
-import java.util.Random;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.*;
 
 public class GetQuestionInformationService extends Service<QuestionProperties> {
 
@@ -23,37 +30,190 @@ public class GetQuestionInformationService extends Service<QuestionProperties> {
     @Override
     protected Task<QuestionProperties> createTask() {
         return new Task<>() {
-            protected QuestionProperties call() throws InterruptedException {
-                Question question = new Question(
-                        QuestionCategory.FOOD,
-                        "Finland",
-                        "Sweden",
-                        "Which of these foods are not from Finland?" + new Random().nextBoolean(),
-                        new String[]{"swedish meatballs", "finnish food 1", "finnish food 2", "finnish food 3"},
-                        3
-                );
+            protected QuestionProperties call() throws InterruptedException, URISyntaxException, IOException {
 
-                System.out.println("Changed question");
+                Main.mainFlagImage.setVisible(false);
+                Main.oddFlagImage.setVisible(false);
+                Main.isRoundAnswerContainerDisabled.set(true);
+                Main.canTimerMove.set(false);
 
-                int i = 0;
-                String[] answers = new String[4];
-                for (String answer : question.getAnswers()) {
-                    answers[i] = answer;
-                    i++;
+                // choosing the country
+                List<String> countriesList = new ArrayList<>();
+                countriesList.add("Polish");
+                countriesList.add("Chinese");
+                countriesList.add("Indian");
+                countriesList.add("German");
+                countriesList.add("French");
+                countriesList.add("Italian");
+                countriesList.add("Japanese");
+                countriesList.add("Spanish");
+
+                HashMap<String, String> countriesHashMap = new HashMap<>();
+                countriesHashMap.put("Polish", "PL");
+                countriesHashMap.put("Chinese", "CN");
+                countriesHashMap.put("Indian", "IN");
+                countriesHashMap.put("German", "DE");
+                countriesHashMap.put("French", "FR");
+                countriesHashMap.put("Italian", "IT");
+                countriesHashMap.put("Japanese", "JP");
+                countriesHashMap.put("Spanish", "ES");
+
+                Random generator = new Random();
+                String mainCountry = countriesList.get(generator.nextInt(countriesList.size()));
+                countriesList.remove(mainCountry);
+                String oddCountry = countriesList.get(generator.nextInt(countriesList.size()));
+                String mainCountryShort = "https://flagsapi.com/" + countriesHashMap.get(mainCountry) + "/flat/64.png";
+                String oddCountryShort = "https://flagsapi.com/" + countriesHashMap.get(oddCountry) + "/flat/64.png";
+
+                // request
+                HttpClient client = HttpClient.newHttpClient();
+                String baseURL = "https://api.wikimedia.org/core/v1/wikipedia/en/page/List_of_" + mainCountry + "_dishes/with_html";
+                HttpRequest getRequest = HttpRequest.newBuilder()
+                        .uri(new URI(baseURL))
+                        .headers("Authorization", clientID + " " + accessToken, "User-Agent", "CountryCatS")
+                        .GET().build();
+                HttpResponse<String> mainCountryresponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+                baseURL = "https://api.wikimedia.org/core/v1/wikipedia/en/page/List_of_" + oddCountry + "_dishes/with_html";
+                getRequest = HttpRequest.newBuilder()
+                        .uri(new URI(baseURL))
+                        .headers("Authorization", clientID + " " + accessToken, "User-Agent", "CountryCatS")
+                        .GET().build();
+                HttpResponse<String> oddCountryresponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+                // handling the html
+                List<String> filters = new ArrayList<>();
+                filters.add("/");
+                filters.add("\\");
+                filters.add(":");
+                filters.add("Category");
+                filters.add("\n");
+                filters.add("foods");
+                filters.add("dishes");
+                filters.add("Foods");
+                filters.add("Dishes");
+                filters.add("from");
+                filters.add("with");
+
+                List<String> endingFilters = new ArrayList<>();
+                endingFilters.add("ian");
+                endingFilters.add("ish");
+                endingFilters.add("ia");
+                endingFilters.add("an");
+                endingFilters.add("ench");
+                endingFilters.add("nese");
+                endingFilters.add("lese");
+                endingFilters.add("and");
+                endingFilters.add("Lanka");
+                endingFilters.add("ino");
+                endingFilters.add("eshi");
+                endingFilters.add("ani");
+
+                // stworzenie listy słów mainCountry i oddCountry
+                int splitIndexMain = mainCountryresponse.body().indexOf("\"html\":\"");
+
+                String onlyHtmlMainCountry = mainCountryresponse.body().substring(splitIndexMain + 7);
+                onlyHtmlMainCountry = onlyHtmlMainCountry.substring(0, onlyHtmlMainCountry.length() - 2);
+                Document doc1 = Jsoup.parse(onlyHtmlMainCountry);
+                List<String> mainCountryDishes = new ArrayList<>();
+
+                String onlyHtmlOddCountry = oddCountryresponse.body().substring(splitIndexMain + 7);
+                onlyHtmlOddCountry = onlyHtmlOddCountry.substring(0, onlyHtmlOddCountry.length() - 2);
+                Document doc2 = Jsoup.parse(onlyHtmlOddCountry);
+                List<String> oddCountryDishes = new ArrayList<>();
+
+                Elements mainCountryListElements = doc1.select("li");
+                for (Element listElement : mainCountryListElements.asList()) {
+                    if (listElement.text().length() > 7 && listElement.text().length() < 20) {
+                        boolean flag = false;
+                        for (String filter : filters) {
+                            if (listElement.text().contains(filter)) {
+                                flag = true;
+                                break;
+                            }
+                        }
+
+                        for (String ending : endingFilters) {
+                            if (listElement.text().endsWith(ending)) {
+                                flag = true;
+                                break;
+                            }
+                        }
+
+                        if (flag)
+                            continue;
+                        else {
+                            mainCountryDishes.add(listElement.text());
+                        }
+                    }
                 }
-                QuestionProperties questionProperties = new QuestionProperties(
-                        question.getMainCountry(),
-                        question.getQuestion(),
-                        answers,
-                        question.getCorrectAnswerIndex()
+
+                Elements oddCountryListElements = doc2.select("li");
+                for (Element listElement : oddCountryListElements.asList()) {
+                    if (listElement.text().length() > 7 && listElement.text().length() < 20) {
+                        boolean flag = false;
+                        for (String filter : filters) {
+                            if (listElement.text().contains(filter)) {
+                                flag = true;
+                                break;
+                            }
+                        }
+
+                        for (String ending : endingFilters) {
+                            if (listElement.text().endsWith(ending)) {
+                                flag = true;
+                                break;
+                            }
+                        }
+
+                        if (flag)
+                            continue;
+                        else {
+                            oddCountryDishes.add(listElement.text());
+                        }
+                    }
+                }
+
+                // wybranie 3 dań od main country i 1 od odd country
+                int correctAnswerIndex = generator.nextInt(4);
+                String[] answers = new String[]{"","","",""};
+                for (int i = 0; i < 4; i++) {
+                    if (i != correctAnswerIndex)
+                        answers[i] = mainCountryDishes.get(generator.nextInt(mainCountryDishes.size()));
+                    else
+                        answers[i] = oddCountryDishes.get(generator.nextInt(oddCountryDishes.size()));
+                }
+
+                Question question = new Question(
+                    QuestionCategory.FOOD,
+                    mainCountry,
+                    oddCountry,
+                    "Which of these foods is not " + mainCountry + " but " + oddCountry + "?",
+                    answers,
+                    correctAnswerIndex
                 );
 
-                System.out.println("Changed question properties");
+                System.out.println(Arrays.toString(answers) + " correct answer: " + correctAnswerIndex);
+
+                QuestionProperties questionProperties = new QuestionProperties(
+                    question.getMainCountry(),
+                    mainCountryShort,
+                    question.getQuestion(),
+                    question.getAnswers(),
+                    question.getCorrectAnswerIndex()
+                );
 
                 if (isCancelled()) {
                     return null;
                 }
+
                 updateValue(questionProperties);
+                Main.mainFlagImage.setImage(new Image(mainCountryShort));
+                Main.oddFlagImage.setImage(new Image(oddCountryShort));
+                Main.isRoundAnswerContainerDisabled.set(false);
+                Main.mainFlagImage.setVisible(true);
+                Main.oddFlagImage.setVisible(true);
+                Main.canTimerMove.set(true);
 
                 return questionProperties;
             }

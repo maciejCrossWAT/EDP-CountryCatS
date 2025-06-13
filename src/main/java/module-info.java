@@ -10,6 +10,8 @@ module com.maciejcrosswat.projekt {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.net.http;
+    requires org.jsoup;
 
     opens com.maciejcrosswat.projekt to javafx.fxml;
     exports com.maciejcrosswat.projekt;

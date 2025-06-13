@@ -18,24 +18,28 @@ public class MenuController {
     public void handleOnPressStartButton(MouseEvent event) {
         stage.setScene(Main.getScenes().get(SceneName.GAME_ROUND));
 
-        if (
-                Main.getQuestionInformationService.getState()
-                        .equals(Worker.State.SUCCEEDED) ||
-                        Main.getQuestionInformationService.getState()
-                                .equals(Worker.State.CANCELLED)) {
-            Main.getQuestionInformationService.restart();
+        if (Main.resetQuestionInformationService.getState().equals(Worker.State.READY)) {
+            Main.resetQuestionInformationService.start();
         } else {
-            Main.getQuestionInformationService.start();
+            Main.resetQuestionInformationService.restart();
         }
 
-        if (
-                Main.getQuestionTimerService.getState()
-                        .equals(Worker.State.SUCCEEDED) ||
-                Main.getQuestionTimerService.getState()
-                        .equals(Worker.State.CANCELLED)) {
-            Main.getQuestionTimerService.restart();
+        if (Main.getQuestionInformationService.getState().equals(Worker.State.READY)) {
+            Main.getQuestionInformationService.start();
         } else {
+            Main.getQuestionInformationService.restart();
+        }
+
+        if (Main.getQuestionTimerService.getState().equals(Worker.State.READY)) {
             Main.getQuestionTimerService.start();
+        } else {
+            Main.getQuestionTimerService.restart();
+        }
+
+        if (Main.getRoundNumberService.getState().equals(Worker.State.READY)) {
+            Main.getRoundNumberService.start();
+        } else {
+            Main.getRoundNumberService.restart();
         }
     }
 
