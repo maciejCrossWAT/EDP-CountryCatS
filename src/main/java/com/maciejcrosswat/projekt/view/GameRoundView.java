@@ -9,8 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -50,36 +48,92 @@ public class GameRoundView implements IView {
         bottomContainer.setPadding(new Insets(0, 10, 0, 10));
 
         // Making answer elements
-        List<Pane> answerPanes = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            BorderPane pane = new BorderPane();
+        BorderPane pane1 = new BorderPane();
 
-            Label answer = new Label("answer " + i);
-            answer.textProperty().bind(Main.questionProperties.getAnswer(i));
-            answer.setFont(new Font("System Bold", 20));
-            pane.setUserData(i);
+        Label answer1 = new Label("answer " + 0);
+        answer1.textProperty().bind(Main.questionProperties.getAnswer0());
+        answer1.textProperty();
+        answer1.setFont(new Font("System Bold", 20));
+        pane1.setUserData(0);
 
-            pane.setPrefWidth(390);
-            pane.setPrefHeight(210);
-            pane.setStyle(String.format("-fx-background-color: %s", Colors.primary));
-            pane.setOnMousePressed(controller::handleNewRound);
-            pane.setCenter(answer);
-            pane.setOnMouseEntered(event -> {
-                pane.setStyle(String.format("-fx-background-color: %s", Colors.accent));
-            });
-            pane.setOnMouseExited(event -> {
-                pane.setStyle(String.format("-fx-background-color: %s", Colors.primary));
-            });
+        pane1.setPrefWidth(390);
+        pane1.setPrefHeight(210);
+        pane1.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        pane1.setOnMousePressed(controller::handleNewRound);
+        pane1.setCenter(answer1);
+        pane1.setOnMouseEntered(event -> {
+            pane1.setStyle(String.format("-fx-background-color: %s", Colors.accent));
+        });
+        pane1.setOnMouseExited(event -> {
+            pane1.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        });
 
-            answerPanes.add(pane);
-        }
+        BorderPane pane2 = new BorderPane();
+
+        Label answer2 = new Label("answer " + 0);
+        answer2.textProperty().bind(Main.questionProperties.getAnswer1());
+        answer2.textProperty();
+        answer2.setFont(new Font("System Bold", 20));
+        pane2.setUserData(1);
+
+        pane2.setPrefWidth(390);
+        pane2.setPrefHeight(210);
+        pane2.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        pane2.setOnMousePressed(controller::handleNewRound);
+        pane2.setCenter(answer2);
+        pane2.setOnMouseEntered(event -> {
+            pane2.setStyle(String.format("-fx-background-color: %s", Colors.accent));
+        });
+        pane2.setOnMouseExited(event -> {
+            pane2.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        });
+
+        BorderPane pane3 = new BorderPane();
+
+        Label answer3 = new Label("answer " + 0);
+        answer3.textProperty().bind(Main.questionProperties.getAnswer2());
+        answer3.textProperty();
+        answer3.setFont(new Font("System Bold", 20));
+        pane3.setUserData(2);
+
+        pane3.setPrefWidth(390);
+        pane3.setPrefHeight(210);
+        pane3.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        pane3.setOnMousePressed(controller::handleNewRound);
+        pane3.setCenter(answer3);
+        pane3.setOnMouseEntered(event -> {
+            pane3.setStyle(String.format("-fx-background-color: %s", Colors.accent));
+        });
+        pane3.setOnMouseExited(event -> {
+            pane3.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        });
+
+        BorderPane pane4 = new BorderPane();
+
+        Label answer4 = new Label("answer " + 0);
+        answer4.textProperty().bind(Main.questionProperties.getAnswer3());
+        answer4.textProperty();
+        answer4.setFont(new Font("System Bold", 20));
+        pane4.setUserData(3);
+
+        pane4.setPrefWidth(390);
+        pane4.setPrefHeight(210);
+        pane4.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        pane4.setOnMousePressed(controller::handleNewRound);
+        pane4.setCenter(answer4);
+        pane4.setOnMouseEntered(event -> {
+            pane4.setStyle(String.format("-fx-background-color: %s", Colors.accent));
+        });
+        pane4.setOnMouseExited(event -> {
+            pane4.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        });
 
         // Making grid element
         GridPane answerGrid = new GridPane();
-        answerGrid.add(answerPanes.get(0), 0, 0);
-        answerGrid.add(answerPanes.get(1), 1, 0);
-        answerGrid.add(answerPanes.get(2), 0, 1);
-        answerGrid.add(answerPanes.get(3), 1, 1);
+        answerGrid.add(pane1, 0, 0);
+        answerGrid.add(pane2, 1, 0);
+        answerGrid.add(pane3, 0, 1);
+        answerGrid.add(pane4, 1, 1);
         answerGrid.setHgap(10);
         answerGrid.setVgap(10);
         answerGrid.setStyle(String.format("-fx-background-color: %s", Colors.secondary));

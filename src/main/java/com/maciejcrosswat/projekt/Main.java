@@ -1,8 +1,9 @@
 package com.maciejcrosswat.projekt;
 
+import com.maciejcrosswat.projekt.data.Colors;
 import com.maciejcrosswat.projekt.data.Question;
 import com.maciejcrosswat.projekt.data.QuestionCategory;
-import com.maciejcrosswat.projekt.data.QuestionProperties;
+import com.maciejcrosswat.projekt.data.QuestionProperty;
 import com.maciejcrosswat.projekt.service.*;
 import com.maciejcrosswat.projekt.view.GameEndView;
 import com.maciejcrosswat.projekt.view.GameRoundView;
@@ -11,10 +12,10 @@ import com.maciejcrosswat.projekt.view.RankingView;
 import javafx.application.Application;
 import javafx.beans.property.*;
 import javafx.concurrent.Worker;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.text.Font;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -31,7 +32,7 @@ public class Main extends Application {
 
     // application variables
     public static Question question = getQuestion();
-    public static QuestionProperties questionProperties = getQuestionProperties();
+    public static QuestionProperty questionProperties = getQuestionProperties();
 
     public static IntegerProperty roundNumber = new SimpleIntegerProperty(0);
     public static StringProperty roundString = new SimpleStringProperty("0");
@@ -44,6 +45,8 @@ public class Main extends Application {
     public static ImageView mainFlagImage = new ImageView();
     public static ImageView oddFlagImage = new ImageView();
 
+    public static VBox rankingContainer = getRankingContainer();
+
     public static BooleanProperty isRoundAnswerContainerDisabled = new SimpleBooleanProperty(false);
     public static BooleanProperty canTimerMove = new SimpleBooleanProperty(false);
 
@@ -53,13 +56,13 @@ public class Main extends Application {
     public void start(Stage stage) {
         getQuestionInformationService.setOnSucceeded(
             t -> {
-                QuestionProperties newProps = getQuestionInformationService.getValue();
+                QuestionProperty newProps = getQuestionInformationService.getValue();
                 questionProperties.setMainCountry(newProps.getMainCountry().get());
                 questionProperties.setQuestion(newProps.getQuestion().get());
-                for (int i = 0; i < 4; i++) {
-                    questionProperties.setAnswer(newProps.getAnswer(i).get(), i);
-                    System.out.println("transfered answer nr " + i + ": " + questionProperties.getAnswer(i));
-                }
+                questionProperties.setAnswer0(newProps.getAnswer0().get());
+                questionProperties.setAnswer1(newProps.getAnswer1().get());
+                questionProperties.setAnswer2(newProps.getAnswer2().get());
+                questionProperties.setAnswer3(newProps.getAnswer3().get());
                 questionProperties.setCorrectAnswerIndex(newProps.getCorrectAnswerIndex().get());
             }
         );
@@ -113,12 +116,13 @@ public class Main extends Application {
 
         resetQuestionInformationService.setOnSucceeded(
                 t -> {
-                    QuestionProperties newProps = resetQuestionInformationService.getValue();
+                    QuestionProperty newProps = resetQuestionInformationService.getValue();
                     questionProperties.setMainCountry(newProps.getMainCountry().get());
                     questionProperties.setQuestion(newProps.getQuestion().get());
-                    for (int i = 0; i < 4; i++) {
-                        questionProperties.setAnswer(newProps.getAnswer(i).get(), i);
-                    }
+                    questionProperties.setAnswer0(newProps.getAnswer0().get());
+                    questionProperties.setAnswer1(newProps.getAnswer1().get());
+                    questionProperties.setAnswer2(newProps.getAnswer2().get());
+                    questionProperties.setAnswer3(newProps.getAnswer3().get());
                     questionProperties.setCorrectAnswerIndex(newProps.getCorrectAnswerIndex().get());
                 }
         );
@@ -142,12 +146,12 @@ public class Main extends Application {
         );
 
         gameScoreResetService.setOnSucceeded(
-                t -> {
-                    int scoreValue = gameScoreResetService.getValue();
-                    scoreNumber.set(scoreValue);
-                    String scoreValueString = String.valueOf(scoreValue);
-                    scoreString.set(scoreValueString);
-                }
+            t -> {
+                int scoreValue = gameScoreResetService.getValue();
+                scoreNumber.set(scoreValue);
+                String scoreValueString = String.valueOf(scoreValue);
+                scoreString.set(scoreValueString);
+            }
         );
 
         scenes.put(SceneName.MENU, new MenuView(stage).getScene());
@@ -184,10 +188,10 @@ public class Main extends Application {
         return question;
     }
 
-    public static QuestionProperties getQuestionProperties() {
+    public static QuestionProperty getQuestionProperties() {
         String[] answers = question.getAnswers();
 
-        QuestionProperties questionProperties = new QuestionProperties(
+        QuestionProperty questionProperties = new QuestionProperty(
                 question.getMainCountry(),
                 "BE",
                 question.getQuestion(),
@@ -196,5 +200,13 @@ public class Main extends Application {
         );
 
         return questionProperties;
+    }
+
+    public static VBox getRankingContainer() {
+        VBox rankingList = new VBox();
+        rankingList.setStyle(String.format("-fx-background-color: %s", Colors.primary));
+        rankingList.setPadding(new Insets(5));
+
+        return rankingList;
     }
 }

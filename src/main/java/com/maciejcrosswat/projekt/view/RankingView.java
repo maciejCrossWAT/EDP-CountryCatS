@@ -1,5 +1,6 @@
 package com.maciejcrosswat.projekt.view;
 
+import com.maciejcrosswat.projekt.Main;
 import com.maciejcrosswat.projekt.controller.GameEndingController;
 import com.maciejcrosswat.projekt.controller.RankingController;
 import com.maciejcrosswat.projekt.data.Colors;
@@ -51,12 +52,8 @@ public class RankingView implements IView {
         headerContainer.setPadding(new Insets(10));
 
         // Ranking container
-        VBox rankingList = new VBox();
-        rankingList.setStyle(String.format("-fx-background-color: %s", Colors.primary));
-        rankingList.setPadding(new Insets(5));
-
         BorderPane rankingContainer = new BorderPane();
-        rankingContainer.setCenter(rankingList);
+        rankingContainer.setCenter(Main.rankingContainer);
         rankingContainer.setPadding(new Insets(10));
 
         // Main container

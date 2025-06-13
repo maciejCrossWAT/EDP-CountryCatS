@@ -2,11 +2,7 @@ package com.maciejcrosswat.projekt.controller;
 
 import com.maciejcrosswat.projekt.Main;
 import com.maciejcrosswat.projekt.SceneName;
-import com.maciejcrosswat.projekt.data.Question;
-import com.maciejcrosswat.projekt.data.QuestionCategory;
-import com.maciejcrosswat.projekt.data.QuestionProperties;
 import javafx.concurrent.Worker;
-import javafx.event.Event;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 

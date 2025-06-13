@@ -3,10 +3,9 @@ package com.maciejcrosswat.projekt.service;
 import com.maciejcrosswat.projekt.Main;
 import com.maciejcrosswat.projekt.data.Question;
 import com.maciejcrosswat.projekt.data.QuestionCategory;
-import com.maciejcrosswat.projekt.data.QuestionProperties;
+import com.maciejcrosswat.projekt.data.QuestionProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.scene.image.Image;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,16 +20,16 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 
-public class GetQuestionInformationService extends Service<QuestionProperties> {
+public class GetQuestionInformationService extends Service<QuestionProperty> {
 
     private String clientID = "3d7df620701058d20455dd005953cb86";
     private String clientSecret = "3ed3f86fe7dcd379a49e382898f289bc1bd7846a";
     private String accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzZDdkZjYyMDcwMTA1OGQyMDQ1NWRkMDA1OTUzY2I4NiIsImp0aSI6ImM5M2ZiZmJiZTgxNzFjN2UzOWExYzc0Njc3ZmVjMjE3MzRjZTI4NDZiYzUxNjg2MDlkYjliYmIwZTcyMDc2NWU0ZTU0Yjg0ZDM3YjAxYjUzIiwiaWF0IjoxNzQ5NTY0NzkyLjMzNjYxNSwibmJmIjoxNzQ5NTY0NzkyLjMzNjYxNiwiZXhwIjozMzMwNjQ3MzU5Mi4zMzI2ODcsInN1YiI6Ijc4NDk3MjUzIiwiaXNzIjoiaHR0cHM6Ly9tZXRhLndpa2ltZWRpYS5vcmciLCJyYXRlbGltaXQiOnsicmVxdWVzdHNfcGVyX3VuaXQiOjUwMDAsInVuaXQiOiJIT1VSIn0sInNjb3BlcyI6WyJiYXNpYyJdfQ.blDH5wP-aN7UnebZNmarFOQLOrKqATPChk-rhtsQw1Fdkem2svzGeemUNRKkRb2slvVK1doIyL3R6j5gNIRRkCX8FZuJPk_RzUf_ukjmNYXAYg61w9kOauIx33uyFbwjtlxjGgI_OLdU_gMM30kQ68gqLNRPETKgzSDvt3X5nvdufjMkaXrqavvfj0X76bgpCFgpKmoPN7roHqrslU1QaqGCsITOOOv8DHA17EJusX7AOlk7slefA1EzJM6KltfV25wfRBcpjqZ2V75zvBKwgXPtxDTlsMlaWxUdcMcXOc7CJq-n7lozQT5Wx_HCXV4BIxbZuyafwSElHdJKTXuCCsEWn6OBfP075vkJctlFA59ufoUTu5rTpWuD_CMmp68H4NzImMUn1pr-D36NQ2XTSUySbVSGGfsUURzTUWv7jaVQxTBPo2FYIMdQa951hfuz3mxCX250Q8rWiQxdgIQIeuX6k3NLcGEDRmbnq621M9ISt_QM3SAmMl5LnyHZUeBRJsoIaTUcn1VU3TnH49B4LQnXJL8Hmn5FtAFDbkEKXsGhLc9-KBsi1NXQoWwJsVPK4sgo7Pc3PObvDWA2_GhnN645hWSvGRo3xIO8ez4JKdhnXgqWmMdV9J_G8-B-Hy5oImL5worU6iQn-rcsFuQIE8_YdT0dao_OQqaDZUxNnCQ";
 
     @Override
-    protected Task<QuestionProperties> createTask() {
+    protected Task<QuestionProperty> createTask() {
         return new Task<>() {
-            protected QuestionProperties call() throws InterruptedException, URISyntaxException, IOException {
+            protected QuestionProperty call() throws InterruptedException, URISyntaxException, IOException {
 
                 Main.mainFlagImage.setVisible(false);
                 Main.oddFlagImage.setVisible(false);
@@ -94,6 +93,28 @@ public class GetQuestionInformationService extends Service<QuestionProperties> {
                 filters.add("Dishes");
                 filters.add("from");
                 filters.add("with");
+                filters.add("ese ");
+                filters.add("snacks");
+                filters.add("Snacks");
+                filters.add("brand");
+                filters.add("Brand");
+                filters.add("stani ");
+                filters.add("New");
+                filters.add("American");
+                filters.add("and");
+                filters.add("-");
+                filters.add("Polish");
+                filters.add("Chinese");
+                filters.add("Indian");
+                filters.add("German");
+                filters.add("French");
+                filters.add("Italian");
+                filters.add("Japanese");
+                filters.add("Spanish");
+                filters.add("Christmas");
+                filters.add("Holiday");
+                filters.add("Easter");
+                filters.add("United States");
 
                 List<String> endingFilters = new ArrayList<>();
                 endingFilters.add("ian");
@@ -178,24 +199,32 @@ public class GetQuestionInformationService extends Service<QuestionProperties> {
                 int correctAnswerIndex = generator.nextInt(4);
                 String[] answers = new String[]{"","","",""};
                 for (int i = 0; i < 4; i++) {
-                    if (i != correctAnswerIndex)
-                        answers[i] = mainCountryDishes.get(generator.nextInt(mainCountryDishes.size()));
-                    else
-                        answers[i] = oddCountryDishes.get(generator.nextInt(oddCountryDishes.size()));
+                    if (i != correctAnswerIndex) {
+                        int index = generator.nextInt(mainCountryDishes.size());
+                        answers[i] = mainCountryDishes.get(index);
+                        mainCountryDishes.remove(index);
+                        oddCountryDishes.remove(answers[i]);
+                    }
+                    else {
+                        int index = generator.nextInt(oddCountryDishes.size());
+                        answers[i] = oddCountryDishes.get(index);
+                        oddCountryDishes.remove(index);
+                        mainCountryDishes.remove(answers[i]);
+                    }
                 }
 
                 Question question = new Question(
                     QuestionCategory.FOOD,
                     mainCountry,
                     oddCountry,
-                    "Which of these foods is not " + mainCountry + " but " + oddCountry + "?",
+                    "Which of these dishes is not " + mainCountry + " but " + oddCountry + "?",
                     answers,
                     correctAnswerIndex
                 );
 
                 System.out.println(Arrays.toString(answers) + " correct answer: " + correctAnswerIndex);
 
-                QuestionProperties questionProperties = new QuestionProperties(
+                QuestionProperty questionProperties = new QuestionProperty(
                     question.getMainCountry(),
                     mainCountryShort,
                     question.getQuestion(),

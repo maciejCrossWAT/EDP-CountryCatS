@@ -1,30 +1,17 @@
 package com.maciejcrosswat.projekt.service;
 
-import com.maciejcrosswat.projekt.Main;
 import com.maciejcrosswat.projekt.data.Question;
 import com.maciejcrosswat.projekt.data.QuestionCategory;
-import com.maciejcrosswat.projekt.data.QuestionProperties;
+import com.maciejcrosswat.projekt.data.QuestionProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.scene.image.Image;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-
-public class ResetQuestionInformationService extends Service<QuestionProperties> {
+public class ResetQuestionInformationService extends Service<QuestionProperty> {
 
     @Override
-    protected Task<QuestionProperties> createTask() {
+    protected Task<QuestionProperty> createTask() {
         return new Task<>() {
-            protected QuestionProperties call() {
+            protected QuestionProperty call() {
                 // reset pytania
                 Question question = new Question(
                         QuestionCategory.FOOD,
@@ -40,7 +27,7 @@ public class ResetQuestionInformationService extends Service<QuestionProperties>
                     answers[i] = answer;
                     i++;
                 }
-                QuestionProperties questionProperties = new QuestionProperties(
+                QuestionProperty questionProperties = new QuestionProperty(
                         question.getMainCountry(),
                         "",
                         question.getQuestion(),
