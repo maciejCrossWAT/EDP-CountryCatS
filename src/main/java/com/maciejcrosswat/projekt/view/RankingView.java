@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -59,7 +60,7 @@ public class RankingView implements IView {
         // Main container
         BorderPane container = new BorderPane();
         container.setTop(headerContainer);
-        container.setCenter(rankingContainer);
+        container.setCenter(Main.rankingContainer);
         root.setCenter(container);
 
         Scene scene = new Scene(root, 810, 540);

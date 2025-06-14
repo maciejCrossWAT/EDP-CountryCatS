@@ -1,9 +1,7 @@
 package com.maciejcrosswat.projekt;
 
-import com.maciejcrosswat.projekt.data.Colors;
-import com.maciejcrosswat.projekt.data.Question;
-import com.maciejcrosswat.projekt.data.QuestionCategory;
-import com.maciejcrosswat.projekt.data.QuestionProperty;
+import com.maciejcrosswat.projekt.controller.RankingController;
+import com.maciejcrosswat.projekt.data.*;
 import com.maciejcrosswat.projekt.service.*;
 import com.maciejcrosswat.projekt.view.GameEndView;
 import com.maciejcrosswat.projekt.view.GameRoundView;
@@ -14,10 +12,16 @@ import javafx.beans.property.*;
 import javafx.concurrent.Worker;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.time.Instant;
 import java.util.*;
 
 public class Main extends Application {
@@ -29,6 +33,7 @@ public class Main extends Application {
     public static GetRoundNumberService getRoundNumberService = new GetRoundNumberService();
     public static GameScoreSetService gameScoreSetService = new GameScoreSetService();
     public static GameScoreResetService gameScoreResetService = new GameScoreResetService();
+    public static AddNewRankingPositionService addNewRankingPositionService = new AddNewRankingPositionService();
 
     // application variables
     public static Question question = getQuestion();
@@ -36,7 +41,7 @@ public class Main extends Application {
 
     public static IntegerProperty roundNumber = new SimpleIntegerProperty(0);
     public static StringProperty roundString = new SimpleStringProperty("0");
-    public static final int maxRoundNumber = 5;
+    public static final int maxRoundNumber = 3;
 
     public static IntegerProperty scoreNumber = new SimpleIntegerProperty(0);
     public static StringProperty scoreString = new SimpleStringProperty("0");
@@ -46,6 +51,8 @@ public class Main extends Application {
     public static ImageView oddFlagImage = new ImageView();
 
     public static VBox rankingContainer = getRankingContainer();
+    public static Instant timeStart = Instant.now();
+    public static Instant timeEnd = Instant.now();
 
     public static BooleanProperty isRoundAnswerContainerDisabled = new SimpleBooleanProperty(false);
     public static BooleanProperty canTimerMove = new SimpleBooleanProperty(false);
@@ -69,9 +76,8 @@ public class Main extends Application {
 
         getQuestionInformationService.setOnFailed(
                 t -> {
-                    if (Main.getQuestionInformationService.getState().equals(Worker.State.READY)) {
-                        Main.getQuestionInformationService.start();
-                    } else {
+                    if (Main.getQuestionInformationService.getState().equals(Worker.State.FAILED)
+                            && stage.getScene().equals(scenes.get(SceneName.GAME_ROUND))) {
                         Main.getQuestionInformationService.restart();
                     }
                 }
@@ -142,6 +148,7 @@ public class Main extends Application {
                     scoreNumber.set(scoreValue);
                     String scoreValueString = String.valueOf(scoreValue);
                     scoreString.set(scoreValueString);
+                    System.out.println("current score: " + scoreValueString);
                 }
         );
 
@@ -152,6 +159,37 @@ public class Main extends Application {
                 String scoreValueString = String.valueOf(scoreValue);
                 scoreString.set(scoreValueString);
             }
+        );
+
+        addNewRankingPositionService.setOnSucceeded(
+                t -> {
+                    RankingProperty rankingProperty = addNewRankingPositionService.getValue();
+
+                    BorderPane rankingPane = new BorderPane();
+                    rankingPane.setPrefWidth(800);
+                    rankingPane.setPrefHeight(100);
+                    rankingPane.setPadding(new Insets(20));
+                    rankingPane.setStyle(String.format("-fx-background-color: %s", Colors.accent));
+
+                    System.out.println("received ranking points: " + rankingProperty.getPointsValue().get());
+
+                    Label pointsLabel = new Label();
+                    String label = "Points - " +
+                            rankingProperty.getPointsValue().get();
+                    pointsLabel.setText(label);
+                    pointsLabel.setFont(new Font("System Bold", 24));
+
+                    Label timeTakenLabel = new Label();
+                    label =
+                            "Time taken - " +
+                                    ((int) rankingProperty.getTimeTakenValue().get()) + " seconds";
+                    timeTakenLabel.setText(label);
+                    timeTakenLabel.setFont(new Font("System Bold", 24));
+
+                    rankingPane.setLeft(pointsLabel);
+                    rankingPane.setRight(timeTakenLabel);
+                    rankingContainer.getChildren().add(rankingPane);
+                }
         );
 
         scenes.put(SceneName.MENU, new MenuView(stage).getScene());
@@ -205,7 +243,9 @@ public class Main extends Application {
     public static VBox getRankingContainer() {
         VBox rankingList = new VBox();
         rankingList.setStyle(String.format("-fx-background-color: %s", Colors.primary));
-        rankingList.setPadding(new Insets(5));
+        rankingList.setPadding(new Insets(10));
+        rankingList.setSpacing(10);
+        rankingList.setPrefWidth(800);
 
         return rankingList;
     }

@@ -6,6 +6,9 @@ import javafx.concurrent.Worker;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.time.Instant;
+import java.util.Timer;
+
 public class MenuController {
     private Stage stage;
 
@@ -17,6 +20,7 @@ public class MenuController {
     /** Display the game round scene */
     public void handleOnPressStartButton(MouseEvent event) {
         stage.setScene(Main.getScenes().get(SceneName.GAME_ROUND));
+        Main.timeStart = Instant.now();
 
         if (Main.resetQuestionInformationService.getState().equals(Worker.State.READY)) {
             Main.resetQuestionInformationService.start();

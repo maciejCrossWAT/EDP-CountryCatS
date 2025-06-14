@@ -7,6 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.time.Instant;
+
 public class GameRoundController {
     private Stage stage;
 
@@ -39,7 +41,6 @@ public class GameRoundController {
     public void handleNewRound(MouseEvent event) {
         Node node = (Node) event.getSource() ;
         int value = (Integer)node.getUserData();
-        System.out.println("User chosen index: " + value);
 
         // pobieranie danych do pytania
         if (Main.resetQuestionInformationService.getState().equals(Worker.State.READY)) {
@@ -70,7 +71,7 @@ public class GameRoundController {
         }
 
         // serwis aktualizacji wyniku
-        if (Integer.valueOf(value).equals(Main.getQuestionProperties().getCorrectAnswerIndex().get())) {
+        if (Integer.valueOf(value).equals(Main.questionProperties.getCorrectAnswerIndex().get())) {
             if (Main.gameScoreSetService.getState().equals(Worker.State.READY)) {
                 Main.gameScoreSetService.start();
             } else {
@@ -81,6 +82,7 @@ public class GameRoundController {
         // zakończenie rozgrywki
         if (Main.roundNumber.get() == Main.maxRoundNumber) {
             stage.setScene(Main.getScenes().get(SceneName.GAME_ENDING));
+            Main.timeEnd = Instant.now();
         }
     }
 }

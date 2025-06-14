@@ -1,15 +1,12 @@
 package com.maciejcrosswat.projekt.data;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 
 public class RankingProperty {
-    private IntegerProperty pointsValue;
+    private StringProperty pointsValue;
     private DoubleProperty timeTakenValue;
 
-    public IntegerProperty getPointsValue() {
+    public StringProperty getPointsValue() {
         return pointsValue;
     }
 
@@ -17,7 +14,7 @@ public class RankingProperty {
         return timeTakenValue;
     }
 
-    public void setPointsValue(int value) {
+    public void setPointsValue(String value) {
         this.pointsValue.set(value);
     }
 
@@ -25,8 +22,8 @@ public class RankingProperty {
         this.timeTakenValue.set(time);
     }
 
-    public RankingProperty(int points, double timeTaken) {
-        this.pointsValue = new SimpleIntegerProperty(0);
-        this.timeTakenValue = new SimpleDoubleProperty(0.0);
+    public RankingProperty(String points, double timeTaken) {
+        this.pointsValue = new SimpleStringProperty(points);
+        this.timeTakenValue = new SimpleDoubleProperty(timeTaken);
     }
 }

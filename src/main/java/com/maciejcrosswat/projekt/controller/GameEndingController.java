@@ -19,6 +19,13 @@ public class GameEndingController {
     }
 
     public void handleOnPressMenuButton(MouseEvent event) {
+        // serwis dodania nowego rankingu
+        if (Main.addNewRankingPositionService.getState().equals(Worker.State.READY)) {
+            Main.addNewRankingPositionService.start();
+        } else {
+            Main.addNewRankingPositionService.restart();
+        }
+
         stage.setScene(Main.getScenes().get(SceneName.MENU));
 
         // serwis aktualizacji wyniku
